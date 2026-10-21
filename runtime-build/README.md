@@ -38,6 +38,16 @@ a GPU or desktop and covers capability rejection, usable fallback masks,
 dual backing, disjoint planes and bindings, and maintenance4. These checks do
 not establish the cause of issue #276 or prove behavior on a Windows driver.
 
+Intel Windows drivers can stall in `glMapBufferRange` during mutable buffer
+uploads, including unsynchronized index and vertex uploads when opening menus.
+The renderer uses the existing `glBufferSubData` iovec upload path for these
+buffers. Immutable storage, other vendors and non-Windows
+hosts retain their mapping path. `test-buffer-upload.py` compiles the actual
+upload branch and iovec helpers against fake GL calls to check routing and
+partial multi-iovec data integrity; physical driver validation is separate.
+See the [Intel B390 hardware record](../docs/evidence/INTEL-B390-BUFFER-UPLOAD-2026-10-21.md)
+for the captured waits, candidate checks and remaining coverage limits.
+
 The r16 candidate adds independent startup SDL playback/recording selection via
 `0013-select-sdl-audio-devices.patch`, with per-direction Windows-default fallback.
 The build runs `test-sdl-audio.py` against the patched route function. On a
